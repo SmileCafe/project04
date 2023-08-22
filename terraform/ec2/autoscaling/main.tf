@@ -1,26 +1,26 @@
 #시작템플릿 
 resource "aws_launch_template" "project04-target-image" {
-	name			      = "project04-launch-template"
-	image_id        = data.terraform_remote_state.project04_target_ami.outputs.ami_id
-  instance_type   = "t2.micro"
- 	vpc_security_group_ids 	= [data.terraform_remote_state.project04_sg.outputs.project04_ssh,data.terraform_remote_state.project04_sg.outputs.project04_alb]
-	key_name 				= "project04-key"
+  name                   = "project04-launch-template"
+  image_id               = data.terraform_remote_state.project04_target_ami.outputs.ami_id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [data.terraform_remote_state.project04_sg.outputs.project04_ssh, data.terraform_remote_state.project04_sg.outputs.project04_alb]
+  key_name               = "project04-key"
 
   iam_instance_profile {
-      name = "project04-code-deploy-ec2-role"
-  } 
-  
+    name = "project04-code-deploy-ec2-role"
+  }
+
   tags = {
     Name = "project04-code-deploy-instance"
   }
-	
+
   lifecycle {
-  create_before_destroy = true
+    create_before_destroy = true
   }
 }
 
 resource "aws_autoscaling_group" "project04-target-group" {
- # availability_zones = ["ap-northeast-2a", "ap-northeast-2c"]
+  # availability_zones = ["ap-northeast-2a", "ap-northeast-2c"]
   vpc_zone_identifier = [data.terraform_remote_state.project04_vpc.outputs.private_subnet2a, data.terraform_remote_state.project04_vpc.outputs.private_subnet2c]
 
   name             = "project04-target-group"
@@ -44,6 +44,6 @@ resource "aws_autoscaling_group" "project04-target-group" {
 }
 
 data "aws_lb_target_group" "asg" {
-    arn = "-------"
+  arn = "arn:aws:elasticloadbalancing:ap-northeast-2:257307634175:targetgroup/project04-target-group/f895650542b72313"
 }
 
